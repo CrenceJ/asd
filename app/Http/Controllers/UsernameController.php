@@ -1,0 +1,127 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Post;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use App\User;
+use DateTime;
+use Carbon\Carbon;
+use Session;
+use Helper;
+use Auth;
+use DB;
+class UsernameController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+    $currentUser = Helper::staticInfo();
+    $posts = DB::table('users')
+            ->select('user_id',\DB::raw('CONCAT(first_name," ", last_name) AS fullname'),'username','password','last_login')->get();
+        return view('Admin.settings',compact('posts','currentUser'));
+    }
+    public function delete(Request $request)
+    {
+
+        DB::table('users')->where('user_id', $request->input('us_in'))->delete();
+        return redirect()->route('settings');
+        
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        
+        date_default_timezone_set('Asia/Manila');
+
+        $newUsername = $request->input('uname');
+        $newFirstName = $request->input('fname');
+        $newLastName = $request->input('lname');
+        
+        $newBday = $request->input('bday');
+
+        
+        // User::where('user_id', '=', Auth::user()->user_id)
+        //         ->update([
+        //             'first_name' => $newFirstName,
+        //             'last_name' => $newLastName
+        //         ]);
+
+
+        DB::table('users')->where('user_id', '=', Auth::user()->user_id)
+        ->update([
+            'username' => $newUsername,
+            'updated_at' => Carbon::now()
+        ]);
+
+                return redirect('/settings');
+    }
+    
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+            
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        //
+    }
+}
